@@ -1,12 +1,3 @@
-latex
-=====
-
-A simple latex wrapper for the `pdflatex` binary.
-
-You don't have to worry about rerunning `pdflatex` in order to get the cross-references right.
-
-#### Usage
-```javascript
 var 
 	util = require("util"),
 	latex = require("./app.js"),
@@ -25,6 +16,4 @@ latex(string, function(err, readStream){
 	var writeStream = fs.createWriteStream("output.pdf");
 	util.pump(readStream, writeStream);
 });
-```
 
-### MIT License

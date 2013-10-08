@@ -12,4 +12,13 @@ logs
 results
 
 npm-debug.log
+
+temp-*
+*.pdf
+env.json
+*.DS_Store
 node_modules
+temp
+.settings
+.project
+.c9revisions

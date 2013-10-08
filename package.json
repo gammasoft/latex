@@ -1,0 +1,24 @@
+{
+  "name": "gammalatex",
+  "version": "0.0.1",
+  "description": "A simple latex wrapper around 'pdflatex' binary",
+  "main": "app.js",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gammasoft/latex.git"
+  },
+  "keywords": [
+    "latex",
+    "wrapper",
+    "pdf"
+  ],
+  "author": "Gammasoft Desenvolvimento de Software Ltda <contact@gammasoft.com.br>",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "rimraf": "~2.2.2"
+  }
+}
