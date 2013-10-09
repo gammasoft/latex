@@ -15,9 +15,9 @@ Then `var latex = require("gammalatex");` on any node.js file.
 
 #### API
 
-- **.parse(string, callbackFunction)**
-	string: String containing valid latex syntax
-	callbackFunction: A function that will be called after parsing your string. This function is called with the following parameters:
+- **.parse(string, callbackFunction)**  
+	*string*: String containing valid latex syntax  
+	*callbackFunction*: A function that will be called after parsing your string. Signature: *callbackFunction(err, readStream)*
 
 #### Usage
 ```javascript
