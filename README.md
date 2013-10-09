@@ -41,4 +41,6 @@ latex.parse(string, function(err, readStream){
 });
 ```
 
+**See a full example [here](https://github.com/gammasoft/latex/blob/master/example.js)**
+
 ### MIT License
