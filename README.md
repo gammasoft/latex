@@ -8,7 +8,7 @@ You don't have to worry about rerunning `pdflatex` in order to get the cross-ref
 #### Pre Requirements
 You must have `pdflatex` installed. 
 
-**Linux**: `sudo yum install textlive-latex`
+**Linux**: `sudo yum install textlive-latex`  
 **Mac OS**: [MacTeX](http://tug.org/mactex/)
 
 #### Installation
