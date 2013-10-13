@@ -40,7 +40,7 @@ module.exports.parse = function(texString, callback){
 function spawnLatexProcess(attempt, outputDirectory, outputLogs, callback){
 	var outputFilePath = path.join(outputDirectory, "output.pdf");
 	
-	var pdflatex = spawn(compileCommand, [/*"-interaction=nonstopmode"*/, "output.tex"], {
+	var pdflatex = spawn(compileCommand.command, ["output.tex"].concat(compileCommand.options), {
 		cwd: outputDirectory
 	});
 	
@@ -92,7 +92,11 @@ function spawnLatexProcess(attempt, outputDirectory, outputLogs, callback){
 						});
 					}
 				}
-				else callback(new Error("Output file was not found - Attempts: " + attempt));
+				else{
+					process.stderr.write(outputLog);
+					process.stderr.write("--------------------------------------------");
+					return callback(new Error("Output file was not found - Attempts: " + attempt));
+				}
 			});
 		} 
 	});
@@ -108,7 +112,16 @@ module.exports.setPreParseHook = function(fn){
 	preParseHook = fn;
 };
 
-var compileCommand = "latexmk";
+var compileCommand = {
+	command: "latexmk",
+	options: ["--pdf"]
+};
+
+//var compileCommand = {
+//	command: "pdflatex",
+//	options: ["-interaction=nonstopmode"]
+//};
+
 module.exports.setCompileCommand = function(command){
 	compileCommand = command;
 };
@@ -124,7 +137,7 @@ module.exports.addRerunIndicator = function(text){
 
 
 function shouldRerun(outputLog){
-	if(compileCommand === "latexmk") return false;
+	if(compileCommand.command === "latexmk") return false;
 	
 	for(var i = 0; i < rerunIndicators.length; i++){
 		if(outputLog.indexOf(rerunIndicators[i]) !== -1)
