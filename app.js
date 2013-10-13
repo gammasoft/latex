@@ -40,7 +40,7 @@ module.exports.parse = function(texString, callback){
 function spawnLatexProcess(attempt, outputDirectory, outputLogs, callback){
 	var outputFilePath = path.join(outputDirectory, "output.pdf");
 	
-	var pdflatex = spawn("pdflatex", ["-interaction=nonstopmode", "output.tex"], {
+	var pdflatex = spawn(compileCommand, [/*"-interaction=nonstopmode"*/, "output.tex"], {
 		cwd: outputDirectory
 	});
 	
@@ -108,6 +108,11 @@ module.exports.setPreParseHook = function(fn){
 	preParseHook = fn;
 };
 
+var compileCommand = "latexmk";
+module.exports.setCompileCommand = function(command){
+	compileCommand = command;
+};
+
 var rerunIndicators = ["Rerun to get cross-references right", "Rerun to get outlines right"];
 module.exports.getRerunIndicators = function(){
 	return rerunIndicators;
@@ -119,6 +124,8 @@ module.exports.addRerunIndicator = function(text){
 
 
 function shouldRerun(outputLog){
+	if(compileCommand === "latexmk") return false;
+	
 	for(var i = 0; i < rerunIndicators.length; i++){
 		if(outputLog.indexOf(rerunIndicators[i]) !== -1)
 			return true;
