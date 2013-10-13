@@ -28,16 +28,16 @@ module.exports.parse = function(texString, callback){
 						});
 					}
 					
-					spawnLatexProcess(0, outputDirectory, callback);
+					spawnLatexProcess(0, outputDirectory, [], callback);
 				});
 			}
 			else
-				spawnLatexProcess(0, outputDirectory, callback);
+				spawnLatexProcess(0, outputDirectory, [], callback);
 		});
 	});
 };
 
-function spawnLatexProcess(attempt, outputDirectory, callback){
+function spawnLatexProcess(attempt, outputDirectory, outputLogs, callback){
 	var outputFilePath = path.join(outputDirectory, "output.pdf");
 	
 	var pdflatex = spawn("pdflatex", ["-interaction=nonstopmode", "output.tex"], {
@@ -56,8 +56,9 @@ function spawnLatexProcess(attempt, outputDirectory, callback){
 			return callback(new Error("Latex Error! Check your latex string"));
 		}
 		
+		outputLogs.push(outputLog);
 		if(shouldRerun(outputLog) && attempt < 10)
-			spawnLatexProcess(++attempt, outputDirectory, callback);
+			spawnLatexProcess(++attempt, outputDirectory, outputLogs, callback);
 		else{
 			fs.exists(outputFilePath, function(exists){
 				if(exists){
@@ -82,7 +83,7 @@ function spawnLatexProcess(attempt, outputDirectory, callback){
 					
 					function sendPdfStream(){
 						var readStream = fs.createReadStream(outputFilePath);
-						callback(null, readStream);
+						callback(null, readStream, outputLogs);
 						
 						readStream.on("close", function(){
 							rimraf(outputDirectory, function(err){
