@@ -40,7 +40,7 @@ module.exports.parse = function(texString, callback){
 function spawnLatexProcess(attempt, outputDirectory, outputLogs, callback){
 	var outputFilePath = path.join(outputDirectory, "output.pdf");
 	
-	var pdflatex = spawn(compileCommand.command, ["output.tex"].concat(compileCommand.options), {
+	var pdflatex = spawn(compileCommand.command, compileCommand.options.concat(["output.tex"]), {
 		cwd: outputDirectory
 	});
 	
@@ -48,12 +48,18 @@ function spawnLatexProcess(attempt, outputDirectory, outputLogs, callback){
 	pdflatex.stdout.on("data", function(data){
 		outputLog += data.toString("utf8");
 	});
+	pdflatex.stderr.on("data", function(data){
+		// Ignore stderr.
+	});
 	
 	pdflatex.on("close", function(code){
 		if(code !== 0){
 			process.stderr.write(outputLog);
 			process.stderr.write("--------------------------------------------");
-			return callback(new Error("Latex Error! Check your latex string"));
+			return rimraf(outputDirectory, function(err){
+				if(err) throw err;
+				return callback(new Error("Latex Error! Check your latex string"));
+			});
 		}
 		
 		outputLogs.push(outputLog);
@@ -112,15 +118,22 @@ module.exports.setPreParseHook = function(fn){
 	preParseHook = fn;
 };
 
-var compileCommand = {
+var LATEXMK = {
 	command: "latexmk",
 	options: ["--pdf"]
 };
 
-//var compileCommand = {
-//	command: "pdflatex",
-//	options: ["-interaction=nonstopmode"]
-//};
+var PDFLATEX = {
+	command: "pdflatex",
+	options: ["-interaction=nonstopmode"]
+};
+
+var XELATEX = {
+	command: "xelatex",
+	options: ["-interaction=nonstopmode"]
+};
+
+var compileCommand = PDFLATEX;
 
 module.exports.setCompileCommand = function(command){
 	compileCommand = command;
