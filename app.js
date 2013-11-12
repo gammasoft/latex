@@ -112,15 +112,22 @@ module.exports.setPreParseHook = function(fn){
 	preParseHook = fn;
 };
 
-var compileCommand = {
+var LATEXMK = {
 	command: "latexmk",
 	options: ["--pdf"]
 };
 
-//var compileCommand = {
-//	command: "pdflatex",
-//	options: ["-interaction=nonstopmode"]
-//};
+var PDFLATEX = {
+	command: "pdflatex",
+	options: ["-interaction=nonstopmode"]
+};
+
+var XELATEX = {
+	command: "xelatex",
+	options: ["-interaction=nonstopmode"]
+};
+
+var compileCommand = PDFLATEX;
 
 module.exports.setCompileCommand = function(command){
 	compileCommand = command;
