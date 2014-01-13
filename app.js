@@ -40,8 +40,14 @@ module.exports.parse = function(texString, callback){
 function spawnLatexProcess(attempt, outputDirectory, outputLogs, callback){
 	var outputFilePath = path.join(outputDirectory, "output.pdf");
 	
-	var pdflatex = spawn(compileCommand.command, compileCommand.options.concat(["output.tex"]), {
-		cwd: outputDirectory
+	var env = Object.create(process.env); // inherit the standard environment
+	if (compileCommand.texpath) {
+		env.TEXINPUTS = compileCommand.texpath;
+	}
+	var options = compileCommand.options || [];
+	var pdflatex = spawn(compileCommand.command, options.concat(["output.tex"]), {
+		cwd: outputDirectory,
+		env: env
 	});
 	
 	var outputLog = "";
