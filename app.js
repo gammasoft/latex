@@ -40,25 +40,38 @@ module.exports.parse = function(texString, callback){
 function spawnLatexProcess(attempt, outputDirectory, outputLogs, callback){
 	var outputFilePath = path.join(outputDirectory, "output.pdf");
 	
-	var pdflatex = spawn(compileCommand.command, compileCommand.options.concat(["output.tex"]), {
-		cwd: outputDirectory
+	var env = Object.create(process.env); // inherit the standard environment
+	if (compileCommand.texpath) {
+		env.TEXINPUTS = compileCommand.texpath;
+	}
+	var options = compileCommand.options || [];
+	var pdflatex = spawn(compileCommand.command, options.concat(["output.tex"]), {
+		cwd: outputDirectory,
+		env: env
 	});
 	
-	var outputLog = "";
+	var outputLog = "", outputErr = "";
 	pdflatex.stdout.on("data", function(data){
 		outputLog += data.toString("utf8");
 	});
 	pdflatex.stderr.on("data", function(data){
-		// Ignore stderr.
+		outputErr += data.toString("utf8");
 	});
 	
 	pdflatex.on("close", function(code){
 		if(code !== 0){
 			process.stderr.write(outputLog);
-			process.stderr.write("--------------------------------------------");
+			process.stderr.write("\n---------------------------------------\n");
+			process.stderr.write(outputErr);
+			process.stderr.write("\n---------------------------------------\n");
 			return rimraf(outputDirectory, function(err){
-				if(err) throw err;
-				return callback(new Error("Latex Error! Check your latex string"));
+				if(!err) {
+					err = new Error("Latex Error! Check your latex string");
+					err.code = code;
+					err.stdout = outputLog;
+					err.stderr = outputErr;
+				}
+				return callback(err);
 			});
 		}
 		

@@ -3,6 +3,17 @@ var
 	latex = require("./app.js"),
 	fs = require("fs");
 
+//setCompileCommand
+//-----------------
+//Customize the name of your latex command and its search path and options.
+latex.setCompileCommand({
+	command: 'xelatex',
+	options: ['-interaction=nonstopmode'],
+	// see http://www.tug.org/texlive/doc/texlive-en/texlive-en.html#x1-550007.1
+	// for additional information on the TEXINPUTS syntax used for texpath
+	texpath: './tex:' // trailing : means, "and the rest of the default path"
+});
+
 //addRerunIndicator
 //-----------------
 //In case the version of latex you use outputs differently you are still able to identify that `pdflatex` must rerun
