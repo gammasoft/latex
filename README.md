@@ -37,7 +37,7 @@ Then `var latex = require("gammalatex");` on any node.js file.
 	*string*: A string to check against `pdflatex` log output to determine whether `pdflatex` must be rerun.
 
 - **.setCompileCommand(object)**  
-	*object*: An object with one mandatory field: `command` gives the name of the latex command, for example `'pdflatex'`, `'xelatex'`, etc.  An optional `options` field gives an array of additional command-line options.  An optional `texpath` field gives a value for the `TEXINPUTS` environment variable, used to specify additional search paths for latex files and packages.
+	*object*: An object with one mandatory field: `command` gives the name of the latex command, for example `'pdflatex'`, `'xelatex'`, etc.  An optional `options` field gives an array of additional command-line options.  An optional `texpath` field gives a value for the `TEXINPUTS` environment variable, used to specify additional search paths for latex files and packages.  An optional `tmpdir` field gives a path for a temporary working directory.
 
 #### Usage
 ```javascript

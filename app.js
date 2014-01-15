@@ -4,8 +4,11 @@ var
 	spawn = require("child_process").spawn,
 	fs = require("fs");
 
+var compileCommand;
+
 module.exports.parse = function(texString, callback){
-	var outputDirectory = path.join(__dirname, "temp-" + generateGuid());
+	var baseDirectory = compileCommand.tmpdir || __dirname;
+	var outputDirectory = path.join(baseDirectory, "temp-" + generateGuid());
 	var texFilePath = path.join(outputDirectory, "output.tex");
 	
 	fs.mkdir(outputDirectory, function(err){
@@ -153,7 +156,7 @@ var XELATEX = {
 	options: ["-interaction=nonstopmode"]
 };
 
-var compileCommand = PDFLATEX;
+compileCommand = PDFLATEX;
 
 module.exports.setCompileCommand = function(command){
 	compileCommand = command;
