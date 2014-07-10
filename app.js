@@ -4,8 +4,11 @@ var
 	spawn = require("child_process").spawn,
 	fs = require("fs");
 
+var compileCommand;
+
 module.exports.parse = function(texString, callback){
-	var outputDirectory = path.join(__dirname, "temp-" + generateGuid());
+	var baseDirectory = compileCommand.tmpdir || __dirname;
+	var outputDirectory = path.join(baseDirectory, "temp-" + generateGuid());
 	var texFilePath = path.join(outputDirectory, "output.tex");
 	
 	fs.mkdir(outputDirectory, function(err){
@@ -22,7 +25,7 @@ module.exports.parse = function(texString, callback){
 				}, function(err){
 					if(err){
 						rimraf(outputDirectory, function(err){
-							if(err) throw err;
+							if(err) return callback(err);
 							
 							return callback(postParseHookError);
 						});
@@ -89,8 +92,7 @@ function spawnLatexProcess(attempt, outputDirectory, outputLogs, callback){
 						}, function(postParseHookError){
 							if(postParseHookError){
 								rimraf(outputDirectory, function(err){
-									if(err) throw err;
-									
+									if(err) return callback(err);
 									return callback(postParseHookError);
 								});
 							}
@@ -102,11 +104,16 @@ function spawnLatexProcess(attempt, outputDirectory, outputLogs, callback){
 					
 					function sendPdfStream(){
 						var readStream = fs.createReadStream(outputFilePath);
-						callback(null, readStream, outputLogs);
-						
-						readStream.on("close", function(){
-							rimraf(outputDirectory, function(err){
-								if(err) throw err;
+						readStream.on("open", function(fd){
+							// as soon as the file is opened we can clean
+							// up the dir -- we can continue reading from the
+							// deleted file until it is closed.
+							rimraf(outputDirectory, function(err) {
+								// wait to invoke the callback, so we can
+								// properly report any errors which occurred
+								// during the rimraf.
+								if(err) { fs.close(fd); return callback(err); }
+								callback(null, readStream, outputLogs);
 							});
 						});
 					}
@@ -114,10 +121,13 @@ function spawnLatexProcess(attempt, outputDirectory, outputLogs, callback){
 				else{
 					process.stderr.write(outputLog);
 					process.stderr.write("--------------------------------------------");
-					return callback(new Error("Output file was not found - Attempts: " + attempt));
+					rimraf(outputDirectory, function(err){
+						if(err) return callback(err);
+						return callback(new Error("Output file was not found - Attempts: " + attempt));
+					});
 				}
 			});
-		} 
+		}
 	});
 }
 
@@ -146,7 +156,7 @@ var XELATEX = {
 	options: ["-interaction=nonstopmode"]
 };
 
-var compileCommand = PDFLATEX;
+compileCommand = PDFLATEX;
 
 module.exports.setCompileCommand = function(command){
 	compileCommand = command;

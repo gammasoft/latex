@@ -11,7 +11,9 @@ latex.setCompileCommand({
 	options: ['-interaction=nonstopmode'],
 	// see http://www.tug.org/texlive/doc/texlive-en/texlive-en.html#x1-550007.1
 	// for additional information on the TEXINPUTS syntax used for texpath
-	texpath: './tex:' // trailing : means, "and the rest of the default path"
+	texpath: './tex:', // trailing : means, "and the rest of the default path"
+	// tmp dir, defaults to __dirname of the gammalatex package.
+	tmpdir: '/tmp'
 });
 
 //addRerunIndicator
