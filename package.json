@@ -1,6 +1,6 @@
 {
   "name": "gammalatex",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A simple latex wrapper around 'pdflatex' binary",
   "main": "app.js",
   "scripts": {
@@ -20,5 +20,21 @@
   "readmeFilename": "README.md",
   "dependencies": {
     "rimraf": "~2.2.2"
-  }
+  },
+  "contributors": [
+    {
+      "name": "Renato Gama",
+      "email": "renatoargh@gmail.com",
+      "url": "https://github.com/renatoargh",
+      "contributions": 20,
+      "hireable": true
+    },
+    {
+      "name": "C. Scott Ananian",
+      "email": "cscott@cscott.net",
+      "url": "https://github.com/cscott",
+      "contributions": 7,
+      "hireable": false
+    }
+  ]
 }
