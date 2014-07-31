@@ -101,19 +101,40 @@ function spawnLatexProcess(attempt, outputDirectory, outputLogs, callback){
 						});
 					}
 					else sendPdfStream();
-					
+
+					function sync(dir, fd, cb) {
+						var punt = function(err) { fs.close(fd); return cb(err); };
+						// ensure that file metadata is flushed
+						fs.fsync(fd, function(err) {
+							if (err) { return punt(err); }
+							// ensure that directory metadata is flushed
+							fs.open(dir, 'r', function(err, dfd) {
+								if (err) { return punt(err); }
+								fs.fsync(dfd, function(err) {
+									if (err) { fs.close(dfd); return punt(err); }
+									fs.close(dfd);
+									return cb(null);
+								});
+							});
+						});
+					};
+
 					function sendPdfStream(){
 						var readStream = fs.createReadStream(outputFilePath);
 						readStream.on("open", function(fd){
-							// as soon as the file is opened we can clean
-							// up the dir -- we can continue reading from the
-							// deleted file until it is closed.
-							rimraf(outputDirectory, function(err) {
-								// wait to invoke the callback, so we can
-								// properly report any errors which occurred
-								// during the rimraf.
-								if(err) { fs.close(fd); return callback(err); }
-								callback(null, readStream, outputLogs);
+							// ensure that the file is actually on disk and in the directory
+							// (avoid race where we try to unlink before the file is present)
+							sync(outputDirectory, fd, function(err1) {
+								// as soon as the file is opened we can clean
+								// up the dir -- we can continue reading from the
+								// deleted file until it is closed.
+								rimraf(outputDirectory, function(err2) {
+									// wait to invoke the callback, so we can
+									// properly report any errors which occurred
+									// during the rimraf.
+									if (err1 || err2) { fs.close(fd); return callback(err1 || err2); }
+									callback(null, readStream, outputLogs);
+								});
 							});
 						});
 					}
