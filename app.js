@@ -177,6 +177,12 @@ var XELATEX = {
 	options: ["-interaction=nonstopmode"]
 };
 
+module.exports.compileCommands = {
+  LATEXMK: LATEXMK,
+  PDFLATEX: PDFLATEX,
+  XELATEX: XELATEX
+};
+
 compileCommand = PDFLATEX;
 
 module.exports.setCompileCommand = function(command){
