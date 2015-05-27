@@ -52,6 +52,7 @@ function spawnLatexProcess(attempt, outputDirectory, outputLogs, callback){
 		cwd: outputDirectory,
 		env: env
 	});
+	pdflatex.on('error', callback);
 	
 	var outputLog = "", outputErr = "";
 	pdflatex.stdout.on("data", function(data){
